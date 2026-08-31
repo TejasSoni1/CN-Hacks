@@ -1,5 +1,5 @@
 {
-  "ai_summary": "Northstar Autonomous Inspection Pilot is at risk. VectorNav firmware delivery moved from September 6 to September 12, reducing integration-testing window before Northstar's September 25 safety review.",
+  "ai_summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
   "organizations": [
     {
       "id": "ORG-001",
@@ -104,7 +104,7 @@
         "CON-001"
       ],
       "notes": "Customer design review with Northstar Energy.\n\nNorthstar requires the drone to fit through a 620mm clearance in Corridor C access hatches.\nCurrent AeroSight enclosure width is 640mm — redesign required before pilot deployment.\n\nNavigation field testing depends on VectorNav firmware delivery for corridor routing.\nNorthstar confirmed the final pilot date of October 15 cannot move.\n\nNorthstar requires a live demonstration before their September 25 safety review board.",
-      "processed": false
+      "processed": true
     },
     {
       "id": "MTG-003",
@@ -133,6 +133,14 @@
       "title": "Thermal imaging inspection",
       "description": "Capture thermal anomalies along inspection path for safety reporting.",
       "status": "approved"
+    },
+    {
+      "id": "REQ-mtgttt14",
+      "project_id": "PROJ-001",
+      "title": "Drone maximum width: 620mm",
+      "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+      "source_meeting_id": "MTG-002",
+      "status": "approved"
     }
   ],
   "risks": [
@@ -144,6 +152,15 @@
       "severity": "high",
       "status": "open",
       "source": "MTG-002"
+    },
+    {
+      "id": "RISK-tt14",
+      "project_id": "PROJ-001",
+      "title": "Hardware redesign + firmware dependency compress testing window",
+      "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+      "severity": "high",
+      "status": "open",
+      "source": "MTG-002"
     }
   ],
   "dependencies": [
@@ -152,6 +169,16 @@
       "project_id": "PROJ-001",
       "title": "VectorNav firmware v2.4.1",
       "description": "Firmware required for corridor navigation integration tests.",
+      "owner_id": "EMP-003",
+      "external_org_id": "ORG-003",
+      "expected_date": "2025-09-06",
+      "status": "pending"
+    },
+    {
+      "id": "DEP-tt14",
+      "project_id": "PROJ-001",
+      "title": "VectorNav firmware for navigation testing",
+      "description": "Field navigation testing blocked until firmware delivery.",
       "owner_id": "EMP-003",
       "external_org_id": "ORG-003",
       "expected_date": "2025-09-06",
@@ -261,6 +288,25 @@
           "event": "Milestone scheduled"
         }
       ]
+    },
+    {
+      "id": "TASK-tt14",
+      "type": "task",
+      "title": "Redesign enclosure for 620mm clearance",
+      "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+      "project_id": "PROJ-001",
+      "owner_id": "EMP-002",
+      "status": "todo",
+      "priority": "critical",
+      "due_date": "2025-09-18",
+      "dependencies": [],
+      "source": "MTG-002",
+      "history": [
+        {
+          "at": "2026-08-31",
+          "event": "Created via AI proposal PROP-1788155831774"
+        }
+      ]
     }
   ],
   "github_events": [
@@ -289,5 +335,870 @@
       "work_item_id": "TASK-104"
     }
   ],
-  "ai_proposals": []
+  "ai_proposals": [
+    {
+      "id": "PROP-1788155831774",
+      "trigger": "Northstar Design Review",
+      "trigger_type": "meeting",
+      "created_at": "2026-08-31T05:57:11.774Z",
+      "status": "approved",
+      "human_review_required": true,
+      "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+      "changes": [
+        {
+          "id": "CHG-1788155831774-0",
+          "action": "create_requirement",
+          "title": "Drone maximum width: 620mm",
+          "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+          "reasoning": "Customer stated hard physical constraint in design review.",
+          "rule": "if statement contains a measured constraint → requirement",
+          "confidence": 0.95,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          },
+          "approval": "approved"
+        },
+        {
+          "id": "CHG-1788155831774-1",
+          "action": "create_work_item",
+          "title": "Redesign enclosure for 620mm clearance",
+          "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+          "reasoning": "Current design exceeds customer clearance by 20mm.",
+          "rule": "if new requirement conflicts with an open item → flag the item",
+          "confidence": 0.92,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          },
+          "approval": "approved"
+        },
+        {
+          "id": "CHG-1788155831775-2",
+          "action": "create_dependency",
+          "title": "VectorNav firmware for navigation testing",
+          "description": "Field navigation testing blocked until firmware delivery.",
+          "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+          "rule": "if blocker is owned by an external org → dependency",
+          "confidence": 0.88,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          },
+          "approval": "approved"
+        },
+        {
+          "id": "CHG-1788155831775-3",
+          "action": "create_or_update_risk",
+          "title": "Hardware redesign + firmware dependency compress testing window",
+          "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+          "reasoning": "Pilot date fixed; multiple parallel blockers.",
+          "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+          "confidence": 0.9,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          },
+          "approval": "approved"
+        },
+        {
+          "id": "CHG-1788155831775-4",
+          "action": "recommended_action",
+          "title": "Prioritize enclosure redesign mechanical validation",
+          "description": "Prioritize enclosure redesign mechanical validation",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prioritize enclosure redesign mechanical validation"
+          },
+          "approval": "approved"
+        },
+        {
+          "id": "CHG-1788155831775-5",
+          "action": "recommended_action",
+          "title": "Prepare integration test plan for post-firmware delivery",
+          "description": "Prepare integration test plan for post-firmware delivery",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prepare integration test plan for post-firmware delivery"
+          },
+          "approval": "approved"
+        },
+        {
+          "id": "CHG-1788155831775-6",
+          "action": "recommended_action",
+          "title": "Schedule demo rehearsal before September 25 safety review",
+          "description": "Schedule demo rehearsal before September 25 safety review",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Schedule demo rehearsal before September 25 safety review"
+          },
+          "approval": "approved"
+        }
+      ],
+      "raw_response": {
+        "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+        "human_review_required": true,
+        "requirements_created": [
+          {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          }
+        ],
+        "work_items_created": [
+          {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "work_items_updated": [],
+        "dependencies_created": [
+          {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "risks_created_or_updated": [
+          {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "decisions_detected": [
+          {
+            "title": "October 15 pilot date is fixed",
+            "description": "Northstar confirmed final pilot cannot move.",
+            "source": "MTG-002"
+          }
+        ],
+        "recommended_actions": [
+          "Prioritize enclosure redesign mechanical validation",
+          "Prepare integration test plan for post-firmware delivery",
+          "Schedule demo rehearsal before September 25 safety review"
+        ]
+      }
+    },
+    {
+      "id": "PROP-1788155865968",
+      "trigger": "Northstar Design Review",
+      "trigger_type": "meeting",
+      "created_at": "2026-08-31T05:57:45.968Z",
+      "status": "pending",
+      "human_review_required": true,
+      "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+      "changes": [
+        {
+          "id": "CHG-1788155865968-0",
+          "action": "create_requirement",
+          "title": "Drone maximum width: 620mm",
+          "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+          "reasoning": "Customer stated hard physical constraint in design review.",
+          "rule": "if statement contains a measured constraint → requirement",
+          "confidence": 0.95,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155865968-1",
+          "action": "create_work_item",
+          "title": "Redesign enclosure for 620mm clearance",
+          "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+          "reasoning": "Current design exceeds customer clearance by 20mm.",
+          "rule": "if new requirement conflicts with an open item → flag the item",
+          "confidence": 0.92,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155865968-2",
+          "action": "create_dependency",
+          "title": "VectorNav firmware for navigation testing",
+          "description": "Field navigation testing blocked until firmware delivery.",
+          "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+          "rule": "if blocker is owned by an external org → dependency",
+          "confidence": 0.88,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155865968-3",
+          "action": "create_or_update_risk",
+          "title": "Hardware redesign + firmware dependency compress testing window",
+          "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+          "reasoning": "Pilot date fixed; multiple parallel blockers.",
+          "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+          "confidence": 0.9,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155865968-4",
+          "action": "recommended_action",
+          "title": "Prioritize enclosure redesign mechanical validation",
+          "description": "Prioritize enclosure redesign mechanical validation",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prioritize enclosure redesign mechanical validation"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155865968-5",
+          "action": "recommended_action",
+          "title": "Prepare integration test plan for post-firmware delivery",
+          "description": "Prepare integration test plan for post-firmware delivery",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prepare integration test plan for post-firmware delivery"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155865968-6",
+          "action": "recommended_action",
+          "title": "Schedule demo rehearsal before September 25 safety review",
+          "description": "Schedule demo rehearsal before September 25 safety review",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Schedule demo rehearsal before September 25 safety review"
+          },
+          "approval": "pending"
+        }
+      ],
+      "raw_response": {
+        "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+        "human_review_required": true,
+        "requirements_created": [
+          {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          }
+        ],
+        "work_items_created": [
+          {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "work_items_updated": [],
+        "dependencies_created": [
+          {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "risks_created_or_updated": [
+          {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "decisions_detected": [
+          {
+            "title": "October 15 pilot date is fixed",
+            "description": "Northstar confirmed final pilot cannot move.",
+            "source": "MTG-002"
+          }
+        ],
+        "recommended_actions": [
+          "Prioritize enclosure redesign mechanical validation",
+          "Prepare integration test plan for post-firmware delivery",
+          "Schedule demo rehearsal before September 25 safety review"
+        ]
+      }
+    },
+    {
+      "id": "PROP-1788155925671",
+      "trigger": "Northstar Design Review",
+      "trigger_type": "meeting",
+      "created_at": "2026-08-31T05:58:45.671Z",
+      "status": "pending",
+      "human_review_required": true,
+      "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+      "changes": [
+        {
+          "id": "CHG-1788155925671-0",
+          "action": "create_requirement",
+          "title": "Drone maximum width: 620mm",
+          "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+          "reasoning": "Customer stated hard physical constraint in design review.",
+          "rule": "if statement contains a measured constraint → requirement",
+          "confidence": 0.95,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155925671-1",
+          "action": "create_work_item",
+          "title": "Redesign enclosure for 620mm clearance",
+          "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+          "reasoning": "Current design exceeds customer clearance by 20mm.",
+          "rule": "if new requirement conflicts with an open item → flag the item",
+          "confidence": 0.92,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155925671-2",
+          "action": "create_dependency",
+          "title": "VectorNav firmware for navigation testing",
+          "description": "Field navigation testing blocked until firmware delivery.",
+          "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+          "rule": "if blocker is owned by an external org → dependency",
+          "confidence": 0.88,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155925671-3",
+          "action": "create_or_update_risk",
+          "title": "Hardware redesign + firmware dependency compress testing window",
+          "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+          "reasoning": "Pilot date fixed; multiple parallel blockers.",
+          "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+          "confidence": 0.9,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155925671-4",
+          "action": "recommended_action",
+          "title": "Prioritize enclosure redesign mechanical validation",
+          "description": "Prioritize enclosure redesign mechanical validation",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prioritize enclosure redesign mechanical validation"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155925671-5",
+          "action": "recommended_action",
+          "title": "Prepare integration test plan for post-firmware delivery",
+          "description": "Prepare integration test plan for post-firmware delivery",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prepare integration test plan for post-firmware delivery"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788155925671-6",
+          "action": "recommended_action",
+          "title": "Schedule demo rehearsal before September 25 safety review",
+          "description": "Schedule demo rehearsal before September 25 safety review",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Schedule demo rehearsal before September 25 safety review"
+          },
+          "approval": "pending"
+        }
+      ],
+      "raw_response": {
+        "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+        "human_review_required": true,
+        "requirements_created": [
+          {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          }
+        ],
+        "work_items_created": [
+          {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "work_items_updated": [],
+        "dependencies_created": [
+          {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "risks_created_or_updated": [
+          {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "decisions_detected": [
+          {
+            "title": "October 15 pilot date is fixed",
+            "description": "Northstar confirmed final pilot cannot move.",
+            "source": "MTG-002"
+          }
+        ],
+        "recommended_actions": [
+          "Prioritize enclosure redesign mechanical validation",
+          "Prepare integration test plan for post-firmware delivery",
+          "Schedule demo rehearsal before September 25 safety review"
+        ]
+      }
+    },
+    {
+      "id": "PROP-1788156653798",
+      "trigger": "Northstar Design Review",
+      "trigger_type": "meeting",
+      "created_at": "2026-08-31T06:10:53.798Z",
+      "status": "pending",
+      "human_review_required": true,
+      "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+      "changes": [
+        {
+          "id": "CHG-1788156653798-0",
+          "action": "create_requirement",
+          "title": "Drone maximum width: 620mm",
+          "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+          "reasoning": "Customer stated hard physical constraint in design review.",
+          "rule": "if statement contains a measured constraint → requirement",
+          "confidence": 0.95,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788156653798-1",
+          "action": "create_work_item",
+          "title": "Redesign enclosure for 620mm clearance",
+          "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+          "reasoning": "Current design exceeds customer clearance by 20mm.",
+          "rule": "if new requirement conflicts with an open item → flag the item",
+          "confidence": 0.92,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788156653798-2",
+          "action": "create_dependency",
+          "title": "VectorNav firmware for navigation testing",
+          "description": "Field navigation testing blocked until firmware delivery.",
+          "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+          "rule": "if blocker is owned by an external org → dependency",
+          "confidence": 0.88,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788156653798-3",
+          "action": "create_or_update_risk",
+          "title": "Hardware redesign + firmware dependency compress testing window",
+          "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+          "reasoning": "Pilot date fixed; multiple parallel blockers.",
+          "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+          "confidence": 0.9,
+          "source": "MTG-002",
+          "affected_records": [],
+          "payload": {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788156653798-4",
+          "action": "recommended_action",
+          "title": "Prioritize enclosure redesign mechanical validation",
+          "description": "Prioritize enclosure redesign mechanical validation",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prioritize enclosure redesign mechanical validation"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788156653798-5",
+          "action": "recommended_action",
+          "title": "Prepare integration test plan for post-firmware delivery",
+          "description": "Prepare integration test plan for post-firmware delivery",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Prepare integration test plan for post-firmware delivery"
+          },
+          "approval": "pending"
+        },
+        {
+          "id": "CHG-1788156653798-6",
+          "action": "recommended_action",
+          "title": "Schedule demo rehearsal before September 25 safety review",
+          "description": "Schedule demo rehearsal before September 25 safety review",
+          "reasoning": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+          "confidence": 0.75,
+          "source": "Northstar Design Review",
+          "affected_records": [],
+          "payload": {
+            "action": "Schedule demo rehearsal before September 25 safety review"
+          },
+          "approval": "pending"
+        }
+      ],
+      "raw_response": {
+        "summary": "Design review reveals 620mm clearance requirement vs 640mm enclosure. Firmware dependency and immovable pilot date create schedule risk.",
+        "human_review_required": true,
+        "requirements_created": [
+          {
+            "title": "Drone maximum width: 620mm",
+            "description": "Northstar requires drone to fit through 620mm Corridor C access hatches.",
+            "source": "MTG-002",
+            "reasoning": "Customer stated hard physical constraint in design review.",
+            "rule": "if statement contains a measured constraint → requirement",
+            "confidence": 0.95,
+            "project_id": "PROJ-001",
+            "status": "proposed"
+          }
+        ],
+        "work_items_created": [
+          {
+            "type": "task",
+            "title": "Redesign enclosure for 620mm clearance",
+            "description": "Mechanical redesign from 640mm to ≤620mm width before pilot.",
+            "owner_id": "EMP-002",
+            "priority": "critical",
+            "due_date": "2025-09-18",
+            "source": "MTG-002",
+            "reasoning": "Current design exceeds customer clearance by 20mm.",
+            "rule": "if new requirement conflicts with an open item → flag the item",
+            "confidence": 0.92,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "work_items_updated": [],
+        "dependencies_created": [
+          {
+            "title": "VectorNav firmware for navigation testing",
+            "description": "Field navigation testing blocked until firmware delivery.",
+            "owner_id": "EMP-003",
+            "external_org_id": "ORG-003",
+            "expected_date": "2025-09-06",
+            "source": "MTG-002",
+            "reasoning": "Meeting notes tie corridor testing to VectorNav firmware.",
+            "rule": "if blocker is owned by an external org → dependency",
+            "confidence": 0.88,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "risks_created_or_updated": [
+          {
+            "title": "Hardware redesign + firmware dependency compress testing window",
+            "description": "Enclosure redesign and VectorNav dependency reduce time before September 25 safety review demo.",
+            "severity": "high",
+            "source": "MTG-002",
+            "reasoning": "Pilot date fixed; multiple parallel blockers.",
+            "rule": "if a slip shortens a window before a fixed customer date → raise severity",
+            "confidence": 0.9,
+            "project_id": "PROJ-001"
+          }
+        ],
+        "decisions_detected": [
+          {
+            "title": "October 15 pilot date is fixed",
+            "description": "Northstar confirmed final pilot cannot move.",
+            "source": "MTG-002"
+          }
+        ],
+        "recommended_actions": [
+          "Prioritize enclosure redesign mechanical validation",
+          "Prepare integration test plan for post-firmware delivery",
+          "Schedule demo rehearsal before September 25 safety review"
+        ]
+      }
+    }
+  ]
 }
