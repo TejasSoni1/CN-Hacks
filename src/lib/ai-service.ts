@@ -6,6 +6,7 @@ import type {
   ProposedChange,
   ProjectState,
 } from "./types";
+import { getExcelSheetNames } from "./store";
 
 const analysisSchema = z.object({
   requirements_created: z.array(z.record(z.unknown())).default([]),
@@ -50,7 +51,8 @@ function responseToChanges(
     confidence: number,
     source: string,
     affected: string[],
-    payload: Record<string, unknown>
+    payload: Record<string, unknown>,
+    rule?: string
   ) => {
     changes.push({
       id: `CHG-${Date.now()}-${idx++}`,
@@ -58,6 +60,7 @@ function responseToChanges(
       title,
       description,
       reasoning,
+      rule,
       confidence,
       source,
       affected_records: affected,
@@ -75,7 +78,8 @@ function responseToChanges(
       Number(req.confidence ?? 0.85),
       String(req.source ?? trigger),
       (req.affected_records as string[]) ?? [],
-      req
+      req,
+      req.rule ? String(req.rule) : undefined
     );
   }
 
@@ -88,7 +92,8 @@ function responseToChanges(
       Number(wi.confidence ?? 0.85),
       String(wi.source ?? trigger),
       (wi.affected_records as string[]) ?? [],
-      wi
+      wi,
+      wi.rule ? String(wi.rule) : undefined
     );
   }
 
@@ -101,7 +106,8 @@ function responseToChanges(
       Number(wi.confidence ?? 0.85),
       String(wi.source ?? trigger),
       (wi.affected_records as string[]) ?? [String(wi.id ?? "")],
-      wi
+      wi,
+      wi.rule ? String(wi.rule) : undefined
     );
   }
 
@@ -114,7 +120,8 @@ function responseToChanges(
       Number(dep.confidence ?? 0.85),
       String(dep.source ?? trigger),
       (dep.affected_records as string[]) ?? [],
-      dep
+      dep,
+      dep.rule ? String(dep.rule) : undefined
     );
   }
 
@@ -127,7 +134,8 @@ function responseToChanges(
       Number(risk.confidence ?? 0.85),
       String(risk.source ?? trigger),
       (risk.affected_records as string[]) ?? [],
-      risk
+      risk,
+      risk.rule ? String(risk.rule) : undefined
     );
   }
 
@@ -165,6 +173,7 @@ export function mockMeetingAnalysis(
           "Northstar requires drone to fit through 620mm Corridor C access hatches.",
         source: meetingId,
         reasoning: "Customer stated hard physical constraint in design review.",
+        rule: "if statement contains a measured constraint → requirement",
         confidence: 0.95,
         project_id: "PROJ-001",
         status: "proposed",
@@ -181,6 +190,7 @@ export function mockMeetingAnalysis(
         due_date: "2025-09-18",
         source: meetingId,
         reasoning: "Current design exceeds customer clearance by 20mm.",
+        rule: "if new requirement conflicts with an open item → flag the item",
         confidence: 0.92,
         project_id: "PROJ-001",
       },
@@ -195,6 +205,7 @@ export function mockMeetingAnalysis(
         expected_date: "2025-09-06",
         source: meetingId,
         reasoning: "Meeting notes tie corridor testing to VectorNav firmware.",
+        rule: "if blocker is owned by an external org → dependency",
         confidence: 0.88,
         project_id: "PROJ-001",
       },
@@ -207,6 +218,7 @@ export function mockMeetingAnalysis(
         severity: "high",
         source: meetingId,
         reasoning: "Pilot date fixed; multiple parallel blockers.",
+        rule: "if a slip shortens a window before a fixed customer date → raise severity",
         confidence: 0.9,
         project_id: "PROJ-001",
       },
@@ -263,6 +275,7 @@ export function mockGithubAnalysis(
         status: "blocked",
         reasoning:
           "PR merged and tests pass, but field validation depends on external firmware.",
+        rule: "code complete never sets physical validation to complete",
         confidence: 0.93,
         source: eventId,
         related_github: "PR #148",
@@ -306,6 +319,7 @@ export function mockVendorAnalysis(state: ProjectState): AIProposal {
         expected_date: "2025-09-12",
         status: "pending",
         reasoning: "Vendor communicated new delivery date.",
+        rule: "if a date on a tracked dependency changes → update, do not duplicate",
         confidence: 0.97,
         source: "MTG-003",
       },
@@ -314,6 +328,7 @@ export function mockVendorAnalysis(state: ProjectState): AIProposal {
         status: "blocked",
         physical_validation: "blocked",
         reasoning: "Integration testing window shortened by 6 days.",
+        rule: "if a slip shortens a window before a fixed date → raise severity",
         confidence: 0.9,
         source: "MTG-003",
       },
@@ -321,6 +336,7 @@ export function mockVendorAnalysis(state: ProjectState): AIProposal {
         id: "MS-001",
         status: "blocked",
         reasoning: "Safety review demo depends on firmware and enclosure work.",
+        rule: "if an upstream dependency slips → cascade to dependent milestones",
         confidence: 0.88,
         source: "MTG-003",
       },
@@ -335,6 +351,7 @@ export function mockVendorAnalysis(state: ProjectState): AIProposal {
         severity: "critical",
         status: "open",
         reasoning: "Cascade impact on navigation, demo, and milestone.",
+        rule: "if a slip shortens a window before a fixed date → raise severity",
         confidence: 0.94,
         source: "MTG-003",
       },
@@ -360,6 +377,223 @@ export function mockVendorAnalysis(state: ProjectState): AIProposal {
     summary: response.summary,
     changes: responseToChanges(response, trigger, "vendor"),
     raw_response: response,
+  };
+}
+
+export function mockContactAnalysis(state: ProjectState): AIProposal {
+  const trigger = "Contact captured — Priya Raman";
+  const alreadyExists = state.contacts.some(
+    (c) => c.email === "priya.raman@northstar-energy.com"
+  );
+
+  const changes: ProposedChange[] = [
+    {
+      id: `CHG-${Date.now()}-0`,
+      action: "create_contact",
+      title: "Priya Raman added",
+      description: "Northstar Energy · Safety Board Chair.",
+      reasoning: "Email domain matched an existing customer org.",
+      rule: "if a name carries an org and a title → contact",
+      confidence: 0.93,
+      source: "Captured contact",
+      affected_records: [],
+      payload: {
+        id: "CON-003",
+        organization_id: "ORG-002",
+        name: "Priya Raman",
+        role: "Safety Board Chair",
+        email: "priya.raman@northstar-energy.com",
+      },
+      approval: "pending",
+    },
+  ];
+
+  const summary = alreadyExists
+    ? "Priya Raman is already in the CRM as Northstar's Safety Board Chair."
+    : "Priya Raman added as Northstar's Safety Board Chair — met at the design review, she signs off the September 25 demo.";
+
+  return {
+    id: `PROP-${Date.now()}`,
+    trigger,
+    trigger_type: "manual",
+    created_at: new Date().toISOString(),
+    status: "pending",
+    human_review_required: true,
+    summary,
+    changes,
+  };
+}
+
+export function mockTaskAnalysis(state: ProjectState): AIProposal {
+  const trigger = "Task captured — reminder for Jordan";
+  const jordan = state.employees.find((e) => e.name === "Jordan Lee");
+
+  const changes: ProposedChange[] = [
+    {
+      id: `CHG-${Date.now()}-0`,
+      action: "create_work_item",
+      title: "Enclosure spec due Thursday",
+      description: "Assigned to Jordan Lee, due 11 September, linked to TASK-101.",
+      reasoning: "Jordan Lee is the only Jordan on this project.",
+      rule: "if a sentence has an owner and a date → work item",
+      confidence: 0.9,
+      source: "Captured task",
+      affected_records: ["TASK-101"],
+      payload: {
+        type: "task",
+        title: "Enclosure spec due Thursday",
+        description: "Confirm the enclosure spec ahead of the 620mm redesign.",
+        owner_id: jordan?.id ?? "EMP-002",
+        priority: "high",
+        due_date: "2025-09-11",
+        project_id: "PROJ-001",
+        source: "Captured task",
+      },
+      approval: "pending",
+    },
+  ];
+
+  return {
+    id: `PROP-${Date.now()}`,
+    trigger,
+    trigger_type: "manual",
+    created_at: new Date().toISOString(),
+    status: "pending",
+    human_review_required: true,
+    summary:
+      "Reminder filed: Jordan Lee owns the enclosure spec, due Thursday 11 September.",
+    changes,
+  };
+}
+
+export function mockPlanAnalysis(state: ProjectState): AIProposal {
+  const trigger = "Whole plan captured — Thermal Payload v2";
+  const alreadyExists = state.projects.some((p) => p.id === "PROJ-002");
+
+  const changes: ProposedChange[] = [
+    {
+      id: `CHG-${Date.now()}-0`,
+      action: "create_project",
+      title: "Thermal Payload v2 drafted",
+      description: "Three phases, two owners, November demo.",
+      reasoning: "Structure matched a plan, not a task.",
+      rule: "if input names phases and owners → project skeleton",
+      confidence: 0.9,
+      source: "Captured plan",
+      affected_records: [],
+      payload: {
+        id: "PROJ-002",
+        name: "Thermal Payload v2",
+        status: "on_track",
+        target_date: "2025-11-15",
+        pm_id: "EMP-001",
+        customer_org_id: "ORG-001",
+        description:
+          "Bench prototype by mid-October, two-week integration with the existing airframe, customer demo in November. Jordan on mechanical, Taylor on firmware.",
+        accentColor: "#5f9c7c",
+        milestones: [
+          { id: "MS-002", title: "Bench prototype", due_date: "2025-10-15", owner_id: "EMP-002" },
+          { id: "MS-003", title: "Airframe integration", due_date: "2025-10-29", owner_id: "EMP-004" },
+          { id: "MS-004", title: "Customer demo", due_date: "2025-11-15", owner_id: "EMP-001" },
+        ],
+      },
+      approval: "pending",
+    },
+    {
+      id: `CHG-${Date.now()}-1`,
+      action: "create_dependency",
+      title: "Thermal vendor selection",
+      description: "Created as a blocking dependency before phase one.",
+      reasoning: "“needs … first” marks a gate.",
+      rule: "if a phase is gated on a supplier → dependency",
+      confidence: 0.88,
+      source: "Captured plan",
+      affected_records: [],
+      payload: {
+        title: "Thermal vendor selection",
+        description: "Select a thermal vendor before the bench-prototype phase begins.",
+        owner_id: "EMP-003",
+        project_id: "PROJ-002",
+        status: "pending",
+      },
+      approval: "pending",
+    },
+  ];
+
+  return {
+    id: `PROP-${Date.now()}`,
+    trigger,
+    trigger_type: "manual",
+    created_at: new Date().toISOString(),
+    status: "pending",
+    human_review_required: true,
+    summary: alreadyExists
+      ? "Thermal Payload v2 already drafted — no changes needed."
+      : "Thermal Payload v2 drafted: bench prototype, airframe integration, and a November customer demo — gated on a thermal vendor selection.",
+    changes,
+  };
+}
+
+export function mockFileAnalysis(state: ProjectState): AIProposal {
+  const sheetNames = getExcelSheetNames();
+  const trigger = "File captured — chimpmanager_ai_hackathon_demo_database.xlsx";
+  const orgCount = state.organizations.length;
+  const contactCount = state.contacts.length;
+  const matchedIds = ["TASK-101", "TASK-104", "TASK-105", "MS-001"].filter((id) =>
+    state.work_items.some((w) => w.id === id)
+  );
+
+  const changes: ProposedChange[] = [
+    {
+      id: `CHG-${Date.now()}-0`,
+      action: "recommended_action",
+      title: `${orgCount} orgs, ${contactCount} contacts imported`,
+      description: "AeroSight, Northstar Energy, VectorNav Components.",
+      reasoning: "Sheet headers matched known entity shapes.",
+      rule: "load hermes:xlsx-reader when a workbook arrives",
+      confidence: 0.95,
+      source: "chimpmanager_ai_hackathon_demo_database.xlsx",
+      affected_records: [],
+      payload: { action: "People & orgs already up to date" },
+      approval: "pending",
+    },
+    {
+      id: `CHG-${Date.now()}-1`,
+      action: "recommended_action",
+      title: `${matchedIds.length} work items matched`,
+      description: "Existing records updated rather than duplicated.",
+      reasoning: `${matchedIds.join(", ")} already exist.`,
+      rule: "match on id column before insert",
+      confidence: 0.92,
+      source: "chimpmanager_ai_hackathon_demo_database.xlsx",
+      affected_records: matchedIds,
+      payload: { action: "Tracker already up to date" },
+      approval: "pending",
+    },
+    {
+      id: `CHG-${Date.now()}-2`,
+      action: "recommended_action",
+      title: "Workbook stored as source",
+      description: `Kept as the origin document for ${sheetNames.length} sheets.`,
+      reasoning: "Imported records need a provenance link.",
+      rule: "always retain the source document",
+      confidence: 0.9,
+      source: "chimpmanager_ai_hackathon_demo_database.xlsx",
+      affected_records: [],
+      payload: { action: "Docs & specs already up to date" },
+      approval: "pending",
+    },
+  ];
+
+  return {
+    id: `PROP-${Date.now()}`,
+    trigger,
+    trigger_type: "manual",
+    created_at: new Date().toISOString(),
+    status: "pending",
+    human_review_required: true,
+    summary: `Workbook loaded — ${sheetNames.length} sheets (${sheetNames.slice(0, 4).join(", ")}${sheetNames.length > 4 ? "…" : ""}). ${orgCount} orgs and ${contactCount} contacts matched against the CRM; ${matchedIds.length} tracker items matched by id.`,
+    changes,
   };
 }
 
@@ -544,6 +778,61 @@ export function applyApprovedChanges(
             status: "open",
             source: String(p.source ?? change.source),
           });
+        }
+        break;
+      }
+      case "create_contact": {
+        const exists = next.contacts.some((c) => c.email === String(p.email));
+        if (!exists) {
+          next.contacts.push({
+            id: String(p.id ?? `CON-${Date.now().toString(36).slice(-4)}`),
+            organization_id: String(p.organization_id ?? "ORG-002"),
+            name: String(p.name ?? change.title),
+            role: String(p.role ?? ""),
+            email: String(p.email ?? ""),
+          });
+        }
+        break;
+      }
+      case "create_project": {
+        const id = String(p.id ?? `PROJ-${Date.now().toString(36).slice(-4)}`);
+        const exists = next.projects.some((proj) => proj.id === id);
+        if (!exists) {
+          next.projects.push({
+            id,
+            name: String(p.name ?? change.title),
+            status: (p.status as "on_track") ?? "on_track",
+            target_date: String(p.target_date ?? ""),
+            pm_id: String(p.pm_id ?? "EMP-001"),
+            customer_org_id: String(p.customer_org_id ?? "ORG-001"),
+            description: String(p.description ?? change.description),
+            accentColor: p.accentColor ? String(p.accentColor) : undefined,
+          });
+
+          const milestones = Array.isArray(p.milestones)
+            ? (p.milestones as Array<Record<string, unknown>>)
+            : [];
+          for (const m of milestones) {
+            next.work_items.push({
+              id: String(m.id ?? `MS-${Date.now().toString(36).slice(-4)}`),
+              type: "milestone",
+              title: String(m.title ?? "Milestone"),
+              description: String(m.title ?? ""),
+              project_id: id,
+              owner_id: String(m.owner_id ?? "EMP-001"),
+              status: "backlog",
+              priority: "medium",
+              due_date: m.due_date ? String(m.due_date) : undefined,
+              dependencies: [],
+              source: `Applied from AI proposal ${proposal.id}`,
+              history: [
+                {
+                  at: new Date().toISOString().slice(0, 10),
+                  event: `Created via AI proposal ${proposal.id}`,
+                },
+              ],
+            });
+          }
         }
         break;
       }

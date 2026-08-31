@@ -51,6 +51,7 @@ export interface Project {
   customer_org_id: string;
   description: string;
   summary?: string;
+  accentColor?: string;
 }
 
 export interface Meeting {
@@ -155,10 +156,14 @@ export interface ProposedChange {
     | "create_dependency"
     | "create_or_update_risk"
     | "create_decision"
+    | "create_contact"
+    | "create_project"
     | "recommended_action";
   title: string;
   description: string;
   reasoning: string;
+  /** The if/then heuristic that fired — shown in the "Rule that fired" trace, distinct from `reasoning` (the "why"). */
+  rule?: string;
   confidence: number;
   source: string;
   affected_records: string[];

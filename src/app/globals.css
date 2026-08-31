@@ -2,6 +2,127 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ink: #161826;
+  --body: #3f424d;
+  --muted: #75798c;
+  --faint: #9397ab;
+  --line: #e7e7ee;
+  --wash: #f8f8fb;
+  --acc: #5d5294;
+  --acc-soft: #f2f0fd;
+  --night: #161826;
+}
+
+html,
 body {
-  color: #0f172a;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #fff;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--acc);
+  text-decoration: none;
+}
+a:hover {
+  color: #423a6a;
+}
+
+::selection {
+  background: rgba(145, 132, 217, 0.24);
+}
+
+input,
+textarea {
+  font-family: inherit;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #9184d9;
+  outline-offset: 2px;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideL {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Hover utilities — inline styles set the resting look; these use !important
+   so a hover can win over an inline background/border/color without needing
+   per-element mouseenter/mouseleave state. */
+.hover-row {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.hover-row:hover {
+  background: rgba(233, 233, 237, 0.06) !important;
+}
+.hover-dark:hover {
+  background: rgba(233, 233, 237, 0.09) !important;
+}
+.hover-wash:hover {
+  background: var(--wash) !important;
+}
+.hover-white:hover {
+  background: #fff !important;
+  color: var(--acc) !important;
+}
+.hover-accsoft:hover {
+  background: var(--acc-soft) !important;
+  border-color: #b5abfc !important;
+}
+.hover-border:hover {
+  border-color: #cfd3e5 !important;
+}
+.hover-dark-btn:hover {
+  background: #292b31 !important;
+}
+.hover-acc-text:hover {
+  color: var(--acc) !important;
 }
