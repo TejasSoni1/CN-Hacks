@@ -11,6 +11,7 @@ import {
   type RouteCard,
 } from "@/lib/hermes";
 import { COLS, type Role } from "@/lib/demo-content";
+import { askChimpy, type ChimpyMessage } from "@/lib/chimpy";
 
 export type Screen =
   | "capture"
@@ -49,6 +50,9 @@ export interface UiState {
   activeProposal: AIProposal | null;
   applied: boolean;
   appliedCount: number;
+  chimpyMessages: ChimpyMessage[];
+  chimpyInput: string;
+  chimpyThinking: boolean;
 }
 
 const initialUi: UiState = {
@@ -87,6 +91,9 @@ const initialUi: UiState = {
   activeProposal: null,
   applied: false,
   appliedCount: 0,
+  chimpyMessages: [],
+  chimpyInput: "",
+  chimpyThinking: false,
 };
 
 export function useChimpManager(initialState: ProjectState) {
@@ -285,6 +292,29 @@ export function useChimpManager(initialState: ProjectState) {
 
   // ---- Chimpy / palette ----
   const toggleChimpy = () => patch((s) => ({ chimpyOpen: !s.chimpyOpen }));
+  const onChimpyInput = (e: React.ChangeEvent<HTMLInputElement>) => patch({ chimpyInput: e.target.value });
+  const sendChimpyMessage = useCallback(
+    async (presetText?: string) => {
+      const text = (presetText ?? ui.chimpyInput).trim();
+      if (!text) return;
+      patch((s) => ({
+        chimpyMessages: [...s.chimpyMessages, { role: "user", text }],
+        chimpyInput: "",
+        chimpyThinking: true,
+      }));
+      await new Promise((r) => setTimeout(r, 500 + Math.random() * 400));
+      const reply = askChimpy(text, projectState);
+      patch((s) => ({
+        chimpyMessages: [...s.chimpyMessages, { role: "assistant", text: reply }],
+        chimpyThinking: false,
+      }));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [ui.chimpyInput, projectState]
+  );
+  const onChimpyKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") sendChimpyMessage();
+  };
   const openPalette = () => patch({ paletteOpen: true, paletteText: "" });
   const closePalette = () => patch({ paletteOpen: false });
   const onPalette = (e: React.ChangeEvent<HTMLInputElement>) => patch({ paletteText: e.target.value });
@@ -330,6 +360,9 @@ export function useChimpManager(initialState: ProjectState) {
     dismissAll,
     resetReview,
     toggleChimpy,
+    onChimpyInput,
+    sendChimpyMessage,
+    onChimpyKey,
     openPalette,
     closePalette,
     onPalette,
